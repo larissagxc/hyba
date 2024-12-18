@@ -1,0 +1,11 @@
+# Ouvrir le terminal Windows PowerShell et après pour utiliser linux : 
+wsl 
+
+# Pour ajouter des nouvelles fichiers sur le GitHub (cloud) : 
+git add .
+git commit -m "mensagem"
+git push
+
+# Télécharger les fichiers du Github (cloud) pour la machine (ordinateur personnel) :
+git pull
+

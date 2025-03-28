@@ -1,0 +1,26 @@
+function err = costFunction(x,initialState,consigne,R,mesure,theorique,t,dt)
+
+    % EKF initialisation
+    ekf = extendedKalmanFilter(@stateTransitionFcn, @measurementFcn);
+    % Bruits et états initiaux
+    ekf.State = initialState; 
+    ekf.ProcessNoise = diag(x/1000); % Bruit de processus
+    ekf.MeasurementNoise = R; % Bruit de mesure
+    
+    %Simulation
+    xEstimated = zeros(5, length(t));
+    disp(x)
+    for k = 1:length(t)
+        % Commandes 
+        uc = consigne(:,k);
+        % Mesures
+        z = mesure(:,k); 
+        % Update EKF
+        predict(ekf, uc, dt); % Predict using current commands
+        correct(ekf, z); % Correct using measurements
+        
+        xEstimated(:, k) = ekf.State;
+    end
+
+    err = sum(1000*(xEstimated(4,:)-theorique(1,:)).^2 + (xEstimated(5,:)-theorique(2,:)).^2);
+end

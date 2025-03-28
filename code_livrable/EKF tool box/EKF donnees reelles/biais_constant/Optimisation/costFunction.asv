@@ -1,0 +1,52 @@
+function err = costFunction(x,consigne,mesure,t,dt)
+
+    % EKF initialisation
+    ekf = extendedKalmanFilter(@stateTransitionFcn, @measurementFcn);
+    % Bruits et états initiaux
+    ekf.State = [mesure(:,1)', x(1),x(2),1e-6,1e-6]; 
+    Q = diag([x(3:9)]);
+    R = diag([x(10:12)]);
+    ekf.ProcessNoise = Q; % Bruit de processus
+    ekf.MeasurementNoise = R; % Bruit de mesure
+    
+    %Simulation
+    xEstimated = zeros(5, length(t));
+    disp(x)
+    disp(Q)
+    for k = 1:length(t)
+        % Commandes actuelles
+        current_u = consigne(:,k);
+        z = mesure(:,k);
+        % Update EKF
+        predict(ekf, current_u, dt); % Predict using current commands
+        correct(ekf, z); % Correct using measurements   
+        % Store results
+        xEstimated(:, k) = ekf.State;
+    end
+
+    x_est = xEstimated(1,:);
+    y_est = xEstimated(2,:);
+    u_est = xEstimated(3,:);
+    v_est = xEstimated(4,:);
+    psi_est = xEstimated(5,:);
+    bu_est = xEstimated(6,:);
+    bv_est = xEstimated(7,:);
+
+    Fc = 0.05;
+    ts = 1;
+    [b,a] = butter(4,Fc*ts*2,"low");
+    
+    v_est_filt = filtfilt(b, a, v_est);
+    psi_est_filt = filtfilt(b, a, psi_est);
+
+    x_cal = zeros(1,length(t));
+    y_cal = zeros(1,length(t));
+    
+    for i = 1:length(t)-1
+        x_cal(i+1) = x_cal(i) + ((u_est(i)+bu_est(i))*cos(psi_est_filt(i)) - (v_est_filt(i)+bv_est(i))*sin(psi_est_filt(i)))*dt;
+        y_cal(i+1) = y_cal(i) + ((u_est(i)+bu_est(i))*sin(psi_est_filt(i)) + (v_est_filt(i)+bv_est(i))*cos(psi_est_filt(i)))*dt;
+    end
+
+
+    err = sum((xEstimated(4,:)-theorique(1,:)).^2);
+end

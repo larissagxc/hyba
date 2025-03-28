@@ -1,0 +1,58 @@
+clc
+clear 
+close all
+
+%% Data initialisation
+% load('data_brut_bateau.mat')
+% 
+% data = [x, y, u, ax, ay, rot_speed_axe_Z];
+% legend = 'x, y, u, ax, ay, r';
+
+load('donnees_filtrees_echantillonnees(2).mat')
+x = gps_filt.x;
+y = gps_filt.y;
+u = gps_filt.v_loch_butter;
+ax = imu_filt_sous.ax_butter;
+ay = imu_filt_sous.ay_butter;
+rot_speed_axe_Z = imu_filt_sous.gyro_z_butter;
+
+
+lat0 = y(1); % Latitude de referência
+lon0 = x(1); % Longitude de referência
+
+dlat = (y - lat0) * (pi/180); % Diferença em radianos
+dlon = (x - lon0) * (pi/180);
+
+R_terra = 6378137; % Raio médio da Terra em metros
+xm = R_terra * dlon * cosd(lat0); % x em metro
+
+u = u*0.5144444444444444444444444;
+
+ym = R_terra * dlat; % y em metros
+
+dt = 1; 
+T_final = length(x)-1;
+t = 0:dt:T_final;  
+psi0 = atan2(ym(2),xm(2));
+
+% Commandes 
+au = ax';
+av = ay';
+r = rot_speed_axe_Z';
+r = r*pi/180;
+
+Mesure = [xm';ym';u'];
+Consigne = [au; av; r];
+
+%% Optimisation
+
+lb = [-10,-pi,0,0,0,0,0,0,0,0,0,0];
+ub = [10,pi,100000,100000,100000];  
+A = [];
+b = [];
+Aeq = [];
+beq = [];  
+
+q0 = [1, psi0, 0.1, 0, 0];
+
+q = fmincon(@(q)costFunction(q,Consigne,Mesure,t,dt),q0,A,b,Aeq,beq,lb,ub);

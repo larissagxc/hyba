@@ -47,5 +47,5 @@ function err = costFunction(x,consigne,mesure,t,dt)
         y_cal(i+1) = y_cal(i) + ((u_est(i)+bu_est(i))*sin(psi_est_filt(i)) + (v_est_filt(i)+bv_est(i))*cos(psi_est_filt(i)))*dt;
     end
 
-    err = norm(y_cal-mesure(2,:),2)+norm(x_cal-mesure(1,:),2);
+    err = norm(y_cal-mesure(2,:),2)+norm(x_cal-mesure(1,:),2); % Fonction de cout sur la trajectoire obtenu par rapport au gps
 end

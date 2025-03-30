@@ -1,11 +1,33 @@
-# Ouvrir le terminal Windows PowerShell et après pour utiliser linux : 
+### Si Windows: 
+# Ouvrir le terminal Windows PowerShell (ou l'interpreteur de commandes - cmd.exe) et, après, pour utiliser linux : ¹
 wsl 
 
-# Pour ajouter des nouvelles fichiers sur le GitHub (cloud) : 
-git add .
-git commit -m "mensagem"
-git push
+### Pour installer git
+$ sudo apt-get install git
 
-# Télécharger les fichiers du Github (cloud) pour la machine (ordinateur personnel) :
-git pull
+### Faire une copie du repository Hyba sur votre ordinateur personnel :
+$ git clone https://github.com/larissagxc/hyba/
 
+### Télécharger les fichiers du Github (cloud) pour la machine (ordinateur personnel) :
+$ git pull
+
+### Pour ajouter des nouvelles fichiers sur le GitHub (cloud) : 
+$ git add .
+$ git commit -m "mensagem"
+$ git push
+
+### Login git remote
+## Créer un jeton d'accès personnel sur GitHub
+# Depuis votre compte GitHub, accédez à Settings → Developer Settings → Personal Access Token → Tokens (classic) → Generate New Toke → Remplissez le formulaire → Generate token
+# Copiez le jeton généré, il ressemblera à ceci : ghp_sFhFsSHhTzMDreGRLjmks4Tzuzgthdvfsrta
+
+$ git config --global user.name "your_github_username"
+$ git config --global user.email "your_github_email"
+$ git config -l
+
+username: votre-username-github
+password: jeton-d'accès-personnel
+
+### Notes : 
+# ¹ Pas de WSL (Windows Subsystem for Linux) ? Essayez la commande wsl --install 
+# De nombreux tutoriels sont disponibles sur internet, mais si vous avez besoin d'aide, envoyez un message à Larissa. 
